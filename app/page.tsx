@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { ImagePlus, LockKeyhole, Send, X, CheckCircle2 } from "lucide-react";
 import { Brand } from "@/components/Brand";
+import { ThemeControls } from "@/components/ThemeControls";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { supabase, supabaseReady } from "@/lib/supabase";
 
 export default function Home() {
@@ -43,9 +45,13 @@ export default function Home() {
   }
 
   return <main className="min-h-screen bg-[#f4f6fa]">
-    <header className="mx-auto flex max-w-5xl items-center justify-between px-5 py-6">
+    <header className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-6">
       <Brand />
-      <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
+      <div className="flex items-center gap-2">
+        <ThemeControls />
+        <InstallAppButton />
+        <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
+      </div>
     </header>
 
     <section className="mx-auto grid max-w-5xl items-center gap-12 px-5 pb-20 pt-8 md:grid-cols-[1fr_1fr] md:pt-16">

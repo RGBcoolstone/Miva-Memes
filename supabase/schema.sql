@@ -14,16 +14,11 @@ create table if not exists public.submissions (
 
 alter table public.submissions enable row level security;
 
--- Anonymous visitors may submit, but cannot read or change any submission.
 drop policy if exists "Anyone can submit anonymously" on public.submissions;
 create policy "Anyone can submit anonymously"
 on public.submissions for insert to anon
-with check (
-  char_length(message) <= 2000
-  and (length(trim(message)) > 0 or image_path is not null)
-);
+with check (char_length(message) <= 2000 and (length(trim(message)) > 0 or image_path is not null));
 
--- Only a trusted admin set in app_metadata can read/manage the inbox.
 drop policy if exists "Admins can read submissions" on public.submissions;
 create policy "Admins can read submissions"
 on public.submissions for select to authenticated
@@ -34,7 +29,6 @@ create policy "Admins can delete submissions"
 on public.submissions for delete to authenticated
 using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
--- Private image bucket. Anonymous uploads only; admin-only reads/deletes.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('submissions', 'submissions', false, 5242880, array['image/jpeg','image/png','image/webp','image/gif'])
 on conflict (id) do update set public = false, file_size_limit = 5242880,
@@ -42,8 +36,7 @@ on conflict (id) do update set public = false, file_size_limit = 5242880,
 
 drop policy if exists "Anonymous can upload submission images" on storage.objects;
 create policy "Anonymous can upload submission images"
-on storage.objects for insert to anon
-with check (bucket_id = 'submissions');
+on storage.objects for insert to anon with check (bucket_id = 'submissions');
 
 drop policy if exists "Admins can view submission images" on storage.objects;
 create policy "Admins can view submission images"

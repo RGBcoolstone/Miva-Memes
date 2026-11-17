@@ -1,29 +1,35 @@
 # MIVA Memes
 
-An NGL-inspired anonymous submission site for a private group. Members can send text and optional images without creating an account. Submissions are private by default; only an authenticated admin can read the inbox.
+An anonymous submission site for the MIVA community. Members can send text and optional images without creating an account. Submissions are private by default; only authenticated admins can read the inbox.
 
 ## Stack
 - Next.js 14 + TypeScript + Tailwind CSS
 - Supabase Postgres + private Storage bucket + Auth
+- Installable Progressive Web App (PWA)
 
 ## Run locally
 1. Install Node.js 20 or newer.
-2. Copy `.env.example` to `.env.local` and add your Supabase project URL and anon key.
-3. In Supabase SQL Editor, run `supabase/schema.sql`.
-4. In Supabase Storage, confirm the private `submissions` bucket exists (the SQL creates it).
-5. Create your admin user in Supabase Authentication. In that user's **app_metadata**, set `"role": "admin"` using a trusted admin method. Do not put service-role keys in this app.
-6. `npm install`
-7. `npm run dev`
+2. Copy `.env.example` to `.env.local` and add your Supabase project URL and publishable/anon key.
+3. In Supabase SQL Editor, run `supabase/schema.sql` if you have not already.
+4. Create admin users in Supabase Authentication. In each user's **app_metadata**, set `{"role":"admin"}` using a trusted admin method. Never put service-role keys in this app.
+5. `npm install`
+6. `npm run dev`
 
 Open http://localhost:3000.
 
+## New features
+- Light, dark, and black-and-white themes; the choice is saved on the device.
+- Password visibility toggle on the admin sign-in form.
+- PWA manifest, app icon, service worker, and install-app button.
+- Offline caching is limited to the app shell and static assets. Sending submissions and accessing the inbox still require an internet connection.
+
+## Install
+For installation on a phone or computer, deploy the site over HTTPS. On supported browsers, use **Install app**. If the browser does not show the install prompt, open its menu and choose **Install app** or **Add to Home Screen**. Localhost is also suitable for local testing.
+
 ## Important security notes
 - Anonymous clients can INSERT submissions but cannot SELECT, UPDATE or DELETE them.
-- The Storage bucket is private. Anonymous users can upload into it but cannot list or read objects. Only the admin role can read them.
+- The Storage bucket is private. Anonymous users can upload but cannot list or read objects. Admins can read/delete them.
 - The admin role must be set in Supabase **app_metadata**, not user-editable `user_metadata`.
-- This starter does not collect names, email addresses or profile details. Hosting/network providers may still retain technical logs, so don't advertise absolute anonymity.
-- Before sharing widely, add CAPTCHA/Turnstile and server-side rate limiting, set upload size/type limits, and test RLS with separate anonymous and admin accounts.
+- Hosting/network providers may retain technical logs; do not promise absolute anonymity.
+- Add CAPTCHA/Turnstile and server-side rate limiting before distributing widely.
 - Keep all service-role keys server-side. Never commit `.env.local`.
-
-## Initial scope
-Private inbox and admin-controlled review. No public feed is enabled. Admin can copy a submission to share it elsewhere.

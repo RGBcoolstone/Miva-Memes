@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LockKeyhole, LogOut, RefreshCw, Copy, Trash2, Image as ImageIcon, Inbox } from "lucide-react";
+import { LockKeyhole, LogOut, RefreshCw, Copy, Trash2, Image as ImageIcon, Inbox, Eye, EyeOff } from "lucide-react";
 import { Brand } from "@/components/Brand";
+import { ThemeControls } from "@/components/ThemeControls";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { supabase, supabaseReady } from "@/lib/supabase";
 
 type Submission = { id: string; message: string; image_path: string | null; created_at: string };
@@ -10,6 +12,7 @@ type Submission = { id: string; message: string; image_path: string | null; crea
 export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [items, setItems] = useState<Submission[]>([]);
   const [urls, setUrls] = useState<Record<string,string>>({});
@@ -33,21 +36,40 @@ export default function AdminPage() {
     setLoading(false);
   }
 
-  useEffect(() => {
+  async function verifyAdmin() {
     if (!supabase) return;
-    supabase.auth.getSession().then(({data}) => { if (data.session) { setLoggedIn(true); load(); } });
-  }, []);
+    const { data } = await supabase.auth.getSession();
+    const session = data.session;
+    if (!session) return;
+    if (session.user.app_metadata?.role !== "admin") {
+      await supabase.auth.signOut();
+      setError("This account does not have administrator access.");
+      return;
+    }
+    setLoggedIn(true);
+    load();
+  }
+
+  useEffect(() => { verifyAdmin(); }, []);
 
   async function login(e: React.FormEvent) {
     e.preventDefault(); setError("");
     if (!supabase) return;
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) setError(authError.message);
-    else { setLoggedIn(true); load(); }
+    if (authError) { setError(authError.message); return; }
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.user.app_metadata?.role !== "admin") {
+      await supabase.auth.signOut();
+      setError("This account is not an administrator. Ask the site owner to grant admin access.");
+      return;
+    }
+    setPassword("");
+    setLoggedIn(true);
+    load();
   }
 
   async function logout() {
-    await supabase?.auth.signOut(); setLoggedIn(false); setItems([]);
+    await supabase?.auth.signOut(); setLoggedIn(false); setItems([]); setUrls({});
   }
 
   async function remove(id: string) {
@@ -72,8 +94,13 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold text-[#061a38]">Admin sign in</h1>
       <p className="mt-2 text-sm text-slate-500">Private access to the MIVA Memes inbox.</p>
       <form onSubmit={login} className="mt-7 space-y-4">
-        <input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Admin email" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#f3263d]"/>
-        <input required type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#f3263d]"/>
+        <input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Admin email" autoComplete="username" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#f3263d]"/>
+        <div className="relative">
+          <input required type={showPassword ? "text" : "password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" autoComplete="current-password" className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-12 text-sm outline-none focus:border-[#f3263d]"/>
+          <button type="button" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} className="absolute inset-y-0 right-3 grid place-items-center text-slate-500 hover:text-[#f3263d]">
+            {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+          </button>
+        </div>
         <button className="w-full rounded-xl bg-[#061a38] px-4 py-3 text-sm font-bold text-white hover:bg-[#102b52]">Sign in</button>
       </form>
       {error && <Notice>{error}</Notice>}
@@ -87,5 +114,13 @@ export default function AdminPage() {
   </Shell>;
 }
 
-function Shell({children}:{children:React.ReactNode}) { return <main className="min-h-screen bg-[#f4f6fa] px-5 pb-16"><header className="mx-auto flex max-w-5xl items-center justify-between py-6"><a href="/"><Brand/></a><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Admin</span></header><div className="mx-auto max-w-5xl">{children}</div></main>; }
+function Shell({children}:{children:React.ReactNode}) {
+  return <main className="min-h-screen bg-[#f4f6fa] px-5 pb-16">
+    <header className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 py-6">
+      <a href="/"><Brand/></a>
+      <div className="flex items-center gap-2"><ThemeControls/><InstallAppButton/><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Admin</span></div>
+    </header>
+    <div className="mx-auto max-w-5xl">{children}</div>
+  </main>;
+}
 function Notice({children}:{children:React.ReactNode}) { return <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{children}</p>; }
