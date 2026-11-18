@@ -1,20 +1,7 @@
 {
-  "id": "/",
-  "name": "MIVA Memes",
-  "short_name": "MIVA Memes",
+  "id": "/", "name": "MIVA Memes", "short_name": "MIVA Memes",
   "description": "Anonymous meme and message submissions for the MIVA community.",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "background_color": "#061a38",
-  "theme_color": "#061a38",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "/miva-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "start_url": "/", "scope": "/", "display": "standalone",
+  "background_color": "#061a38", "theme_color": "#061a38", "orientation": "portrait",
+  "icons": [{ "src": "/miva-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }
