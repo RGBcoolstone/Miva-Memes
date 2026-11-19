@@ -50,7 +50,7 @@ export default function Home() {
       <div className="flex items-center gap-2">
         <ThemeControls />
         <InstallAppButton />
-        <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
+        <a href="/questions" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Questions</a>\n        <a href="/notifications" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Notifications</a>\n        <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
       </div>
     </header>
 
