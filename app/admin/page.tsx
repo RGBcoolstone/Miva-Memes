@@ -106,6 +106,6 @@ export default function AdminPage() {
   </Shell>;
 }
 function Shell({children}:{children:React.ReactNode}) {
-  return <main className="min-h-screen bg-[#f4f6fa] px-5 pb-16"><header className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 py-6"><a href="/"><Brand/></a><div className="flex items-center gap-2"><ThemeControls/><InstallAppButton/><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Admin</span></div></header><div className="mx-auto max-w-5xl">{children}</div></main>;
+  return <main className="min-h-screen bg-[#f4f6fa] px-5 pb-16"><header className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 py-6"><a href="/"><Brand/></a><div className="flex items-center gap-2"><ThemeControls/><InstallAppButton/><a href="/admin/notifications" className="text-xs font-semibold text-slate-500">Notifications</a><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Admin</span></div></header><div className="mx-auto max-w-5xl">{children}</div></main>;
 }
 function Notice({children}:{children:React.ReactNode}){return <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">{children}</p>;}
