@@ -50,7 +50,9 @@ export default function Home() {
       <div className="flex items-center gap-2">
         <ThemeControls />
         <InstallAppButton />
-        <a href="/questions" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Questions</a>\n        <a href="/notifications" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Notifications</a>\n        <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
+        <a href="/questions" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Questions</a>
+        <a href="/notifications" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Notifications</a>
+        <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
       </div>
     </header>
 
@@ -87,7 +89,7 @@ export default function Home() {
         </>}
       </div>
     </section>
-    <footer className="border-t border-slate-200 bg-white/70 px-5 py-6 text-center text-xs text-slate-400">MIVA MEMES Â· Anonymous submissions, privately received.</footer>
+    <footer className="border-t border-slate-200 bg-white/70 px-5 py-6 text-center text-xs text-slate-400">MIVA MEMES · Anonymous submissions, privately received.</footer>
   </main>;
 }
 
