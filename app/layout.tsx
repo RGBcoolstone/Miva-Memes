@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PWARegister } from "@/components/PWARegister";
 import { SplashScreen } from "@/components/SplashScreen";
+import { MaintenanceGate } from "@/components/MaintenanceGate";
 
 const siteUrl = "https://miva-memes.vercel.app";
 
@@ -33,5 +34,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#061a38", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning><body><PWARegister/><SplashScreen/>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning><body><PWARegister/><SplashScreen/><MaintenanceGate/>{children}</body></html>;
 }
