@@ -19,6 +19,26 @@ export default function AdminPage() {
   const [urls,setUrls]=useState<Record<string,string>>({});
   const [error,setError]=useState("");
   const [loading,setLoading]=useState(false);
+  const [maintenanceMode,setMaintenanceMode]=useState(false);
+  const [maintenanceBusy,setMaintenanceBusy]=useState(false);
+
+  async function loadMaintenance() {
+    if(!supabase)return;
+    const {data,error:settingsError}=await supabase.from("site_settings").select("maintenance_mode").eq("id",true).maybeSingle();
+    if(settingsError)setError(settingsError.message);
+    else setMaintenanceMode(Boolean(data?.maintenance_mode));
+  }
+  async function toggleMaintenance() {
+    if(!supabase)return;
+    const next=!maintenanceMode;
+    const confirmed=confirm(next ? "Lock the public website and show the maintenance screen?" : "Turn off maintenance mode and reopen the public website?");
+    if(!confirmed)return;
+    setMaintenanceBusy(true);setError("");
+    const {error:updateError}=await supabase.from("site_settings").update({maintenance_mode:next,updated_at:new Date().toISOString()}).eq("id",true);
+    if(updateError)setError(updateError.message);
+    else setMaintenanceMode(next);
+    setMaintenanceBusy(false);
+  }
 
   async function load() {
     if(!supabase)return;
@@ -46,7 +66,7 @@ export default function AdminPage() {
     if(session.user.app_metadata?.role!=="admin") {
       await supabase.auth.signOut();setError("This account does not have administrator access.");return;
     }
-    setLoggedIn(true);load();
+    setLoggedIn(true);load();loadMaintenance();
   }
   useEffect(()=>{verifyAdmin();},[]);
 
@@ -59,7 +79,7 @@ export default function AdminPage() {
     if(data.session?.user.app_metadata?.role!=="admin") {
       await supabase.auth.signOut();setError("This account is not an administrator. Ask the site owner to grant admin access.");return;
     }
-    setPassword("");setLoggedIn(true);load();
+    setPassword("");setLoggedIn(true);load();loadMaintenance();
   }
   async function logout(){await supabase?.auth.signOut();setLoggedIn(false);setItems([]);setUrls({});}
   async function remove(id:string) {
@@ -86,6 +106,7 @@ export default function AdminPage() {
         <button className="w-full rounded-xl bg-[#061a38] px-4 py-3 text-sm font-bold text-white hover:bg-[#102b52]">Sign in</button>
       </form>{error&&<Notice>{error}</Notice>}
     </div>:<>
+      <section className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#f3263d]">Website access</p><h2 className="mt-1 text-lg font-extrabold text-[#061a38]">Maintenance mode</h2><p className="mt-1 text-sm text-slate-500">{maintenanceMode?"The public website is currently locked. Admin pages remain accessible.":"The public website is open to everyone."}</p></div><button type="button" disabled={maintenanceBusy} onClick={toggleMaintenance} className={`rounded-full px-5 py-3 text-sm font-bold text-white transition disabled:opacity-50 ${maintenanceMode?"bg-emerald-600 hover:bg-emerald-700":"bg-[#f3263d] hover:bg-[#dc1d34]"}`}>{maintenanceBusy?"Saving...":maintenanceMode?"Disable maintenance":"Enable maintenance"}</button></section>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#f3263d]">Private control room</p><h1 className="mt-2 text-3xl font-extrabold text-[#061a38]">Your inbox</h1><p className="mt-1 text-sm text-slate-500">{items.length} submission{items.length===1?"":"s"}</p></div><div className="flex gap-2"><button onClick={load} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold"><RefreshCw size={14}/> Refresh</button><button onClick={logout} className="inline-flex items-center gap-2 rounded-full bg-[#061a38] px-4 py-2 text-xs font-semibold text-white"><LogOut size={14}/> Sign out</button></div></div>
       {error&&<Notice>{error}</Notice>}
       {loading?<p className="py-16 text-center text-sm text-slate-500">Loading inbox...</p>:items.length===0?<div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"><Inbox className="mx-auto text-slate-300" size={36}/><h2 className="mt-4 font-bold text-[#061a38]">Your inbox is empty</h2><p className="mt-1 text-sm text-slate-500">New anonymous submissions will appear here.</p></div>:
