@@ -51,6 +51,7 @@ export default function Home() {
         <ThemeControls />
         <InstallAppButton />
         <a href="/questions" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Questions</a>
+        <a href="/polls" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Polls</a>
         <a href="/notifications" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300">Notifications</a>
         <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"><LockKeyhole size={14}/> Admin</a>
       </div>
