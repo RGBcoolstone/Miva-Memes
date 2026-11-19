@@ -6,8 +6,10 @@ import { ArrowLeft, CheckCircle2, Send } from "lucide-react";
 import { Brand } from "@/components/Brand";
 import { supabase, supabaseReady } from "@/lib/supabase";
 
-type Question={id:string;prompt:string;created_at:string};\ntype AnswerItem={id:string;answer:string;created_at:string};
-export default function QuestionThread(){\n const params=useParams<{slug:string}>();
+type Question={id:string;prompt:string;created_at:string};
+type AnswerItem={id:string;answer:string;created_at:string};
+export default function QuestionThread(){
+ const params=useParams<{slug:string}>();
  const [question,setQuestion]=useState<Question|null>(null);const [answer,setAnswer]=useState("");const [answers,setAnswers]=useState<AnswerItem[]>([]);const [loading,setLoading]=useState(true);const [sending,setSending]=useState(false);const [sent,setSent]=useState(false);const [error,setError]=useState("");
  useEffect(()=>{async function load(){if(!supabase)return;const {data,error}=await supabase.from("questions").select("id,prompt,created_at").eq("slug",params.slug).maybeSingle();if(error)setError(error.message);else if(data){setQuestion(data as Question);const c=await supabase.from("question_answers").select("id,answer,created_at").eq("question_id",data.id).order("created_at",{ascending:false});setAnswers((c.data||[]) as AnswerItem[]);}else setError("This question could not be found.");setLoading(false);}load();},[params.slug]);
  async function submit(e:FormEvent){e.preventDefault();setError("");if(!supabase||!question)return; if(!answer.trim()){setError("Write an answer first.");return;}setSending(true);const {error}=await supabase.from("question_answers").insert({question_id:question.id,answer:answer.trim()});if(error)setError(error.message);else{setSent(true);setAnswer("");setAnswers(old=>[{id:crypto.randomUUID(),answer:answer.trim(),created_at:new Date().toISOString()},...old]);}setSending(false);}
