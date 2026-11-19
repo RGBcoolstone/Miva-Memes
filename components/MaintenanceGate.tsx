@@ -25,7 +25,7 @@ export function MaintenanceGate() {
     return () => {
       active = false;
       window.clearInterval(refresh);
-      void supabase.removeChannel(channel);
+      void supabase!.removeChannel(channel);
     };
   }, [pathname]);
 
